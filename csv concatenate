@@ -1,0 +1,21 @@
+import pandas as pd
+import os
+
+# Set the directory where the CSV files are stored
+directory = '//'
+output_csv = 'consolidated.csv'
+
+
+csv_data = []
+
+for filename in os.listdir(directory):
+    if filename.endswith('.csv'):
+        filepath = os.path.join(directory, filename)
+        # Read the CSV file and append to list
+        csv_data.append(pd.read_csv(filepath))
+
+concatenated_df = pd.concat(csv_data, ignore_index=True)
+
+concatenated_df.to_csv(os.path.join(directory, output_csv), index=False)
+          
+print(f"All CSV files have been concatenated into {output_csv}")
