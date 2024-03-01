@@ -1,0 +1,47 @@
+import instaloader
+import os
+import csv
+
+# Set the directory where you want to save the posts and CSV files
+directory = '//'
+os.chdir(directory)
+
+L = instaloader.Instaloader()
+
+# Instagram account from which to download the posts
+target_username = '//'
+
+
+target_directory = os.path.join(directory, target_username)
+os.makedirs(target_directory, exist_ok=True)
+
+profile = instaloader.Profile.from_username(L.context, target_username)
+
+for post in profile.get_posts():
+    media_filename = f"{post.date_utc.strftime('%Y-%m-%d_%H-%M-%S')}"
+    media_extension = '.jpg' if not post.is_video else '.mp4'
+    media_filename_with_extension = media_filename + media_extension
+    media_path = os.path.join(target_directory, media_filename_with_extension)
+
+    if not os.path.exists(media_path):
+        L.download_post(post, target=target_username)
+
+    data = {
+        'Post ID': post.shortcode,
+        'Media Type': 'Image' if not post.is_video else 'Video',
+        'Filename': media_filename_with_extension,
+        'Likes': post.likes,
+        'Comments': post.comments,
+        'Posted On': post.date_utc.strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    csv_filename = media_filename + '.csv'
+    csv_path = os.path.join(target_directory, csv_filename)
+
+    with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['Post ID', 'Media Type', 'Filename', 'Likes', 'Comments', 'Posted On']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow(data)
+
+print(f"Processed all posts from {target_username}. CSV files are updated/created with the latest details.")
