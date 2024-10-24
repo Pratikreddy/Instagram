@@ -1,0 +1,14 @@
+import subprocess
+
+# Specify the Instagram page name as a variable
+ig_page_name = "goprobengaluru"
+
+# Run the instaloader command with the specified page name
+subprocess.run(["instaloader", ig_page_name], check=True)
+
+print(f"Downloaded data for Instagram page: {ig_page_name}")
+
+
+
+#i thas stopped working in code only from cli
+#pip install instaloader
